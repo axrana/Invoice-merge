@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="amazon_orange">#FF9900</color>
+    <color name="amazon_dark">#232F3E</color>
+    <color name="white">#FFFFFF</color>
+    <color name="text_primary">#111111</color>
+    <color name="text_secondary">#555555</color>
+    <color name="success_green">#1E8E3E</color>
+    <color name="error_red">#D32F2F</color>
+    <color name="border_gray">#DDDDDD</color>
+</resources>
