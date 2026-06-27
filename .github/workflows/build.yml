@@ -19,7 +19,7 @@ uses: actions/checkout@v4
 run: |  
 if \[ -f project.zip \]; then  
 echo "Zip file found! Extracting..."  
-unzip -o project.zip -d .  
+unzip -o amazon-invoice-merger.zip -d .  
 rm project.zip  
 else  
 echo "No zip file found. Proceeding with existing repository files."  
