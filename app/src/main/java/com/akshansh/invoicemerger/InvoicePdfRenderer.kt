@@ -123,17 +123,26 @@ class InvoicePdfRenderer(private val context: Context) {
     }
 
     // Table column widths (sum = CONTENT_WIDTH = 523)
-    // Table column widths, measured exactly from a real Amazon invoice PDF
-    // (sum = CONTENT_WIDTH ≈ 509.7)
+    // Table column widths. Numeric columns are sized with headroom for
+    // MERGED invoice totals, which can exceed any single source invoice's
+    // values (e.g. quantities and amounts compound across multiple merged
+    // orders) - the widths measured from one real sample invoice were too
+    // narrow once larger merged totals overflowed their columns in
+    // practice. Description is narrower than a single real invoice's
+    // column to compensate, which means longer product names wrap to more
+    // lines - an acceptable tradeoff since description text can wrap
+    // freely, while a numeric value overflowing its column visually
+    // collides with the neighboring column's content.
+    // Sum = CONTENT_WIDTH ≈ 509.7
     private val colSlNo = 21f
-    private val colDesc = 249.2f
-    private val colUnitPrice = 38f
-    private val colQty = 17.3f
-    private val colNetAmt = 39.45f
-    private val colTaxRate = 29.5f
-    private val colTaxType = 30.55f
-    private val colTaxAmt = 40.2f
-    private val colTotalAmt = 44.5f
+    private val colDesc = 163.7f
+    private val colUnitPrice = 55f
+    private val colQty = 22f
+    private val colNetAmt = 62f
+    private val colTaxRate = 28f
+    private val colTaxType = 32f
+    private val colTaxAmt = 58f
+    private val colTotalAmt = 68f
 
     fun render(invoice: MergedInvoice, logoBitmap: Bitmap?, outputUri: Uri) {
         val document = PdfDocument()
@@ -211,8 +220,14 @@ class InvoicePdfRenderer(private val context: Context) {
             // rather than preserving the bundled asset's natural aspect
             // ratio - visual fidelity to the original document matters
             // more here than the asset's own proportions.
+            // Width matches the real Amazon invoice's measured logo width
+            // (202.5pt); height is derived from the bitmap's OWN aspect
+            // ratio (now that the asset is cropped to its visible content,
+            // with transparent padding removed) rather than a second fixed
+            // value, which previously caused visible stretching/distortion
+            // when the asset's natural proportions didn't match.
             val logoWidth = 202.5f
-            val logoHeight = 57f
+            val logoHeight = logoWidth * (logoBitmap.height.toFloat() / logoBitmap.width.toFloat())
             val destRect = RectF(MARGIN_LEFT, y, MARGIN_LEFT + logoWidth, y + logoHeight)
             canvas.drawBitmap(logoBitmap, null, destRect, null)
         } else {

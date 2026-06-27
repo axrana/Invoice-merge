@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.akshansh.invoicemerger.app-mergeDebugResources-35:/layout/activity_main.xml",
+        "source": "com.akshansh.invoicemerger.app-main-38:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.akshansh.invoicemerger.app-mergeDebugResources-35:/layout/item_file.xml",
+        "source": "com.akshansh.invoicemerger.app-main-38:/layout/item_file.xml"
+    }
+]
