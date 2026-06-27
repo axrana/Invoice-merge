@@ -1,67 +1,10 @@
-name: Unzip and Build APK
-
-on:  
-push:  
-branches:  
-- main  
-workflow_dispatch:
-
-jobs:  
-build:  
-runs-on: ubuntu-latest
-
-steps:  
-- name: Checkout repo  
-uses: actions/checkout@v4
-
-- name: Check and Extract zip archive  
-run: |  
-if test -f amazon-invoice-merger.zip; then  
-echo "Zip file found! Extracting..."  
-unzip -o amazon-invoice-merger.zip -d .  
-rm amazon-invoice-merger.zip  
-else  
-echo "No zip file found. Proceeding with existing repository files."  
-fi
-
-- name: Set up JDK 17  
-uses: actions/setup-java@v4  
-with:  
-distribution: temurin  
-java-version: '17'
-
-- name: Grant execute permission for gradlew  
-run: |  
-if test -f gradlew; then  
-chmod +x gradlew  
-else  
-echo "Error: gradlew file not found! Make sure it is inside your project folder."  
-exit 1  
-fi
-
-- name: Build debug APK  
-run: |  
-if test -d app; then  
-./gradlew assembleDebug  
-else  
-echo "Error: 'app' directory not found. Check your zip file folder structure!"  
-exit 1  
-fi
-
-- name: Commit extracted files back to GitHub  
-run: |  
-git config --global user.name "github-actions[bot]"  
-git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"  
-git add .  
-if git diff --staged --quiet; then  
-echo "No new files to commit."  
-else  
-git commit -m "Automatically unzipped mobile project folders"  
-git push  
-fi
-
-- name: Upload APK artifact  
-uses: actions/upload-artifact@v4  
-with:  
-name: app-debug-apk  
-path: app/build/outputs/apk/debug/app-debug.apk
+name: "Unzip and Build APK" 
+on:push:branches:- "main"workflow_dispatch: 
+jobs:build:runs-on: "ubuntu-latest"
+steps:- name: "Checkout repo"uses: "actions/checkout@v4"
+- name: "Check and Extract zip archive"run: |if test -f "amazon-invoice-merger.zip"; thenecho "Zip file found! Extracting..."unzip -o "amazon-invoice-merger.zip" -d .rm "amazon-invoice-merger.zip"elseecho "No zip file found. Proceeding with existing repository files."fi 
+- name: "Set up JDK 17"uses: "actions/setup-java@v4"with:distribution: "temurin"java-version: "17"
+- name: "Grant execute permission for gradlew"run: |if test -f "gradlew"; thenchmod +x "gradlew"elseecho "Error: gradlew file not found! Make sure it is inside your project folder."exit 1fi
+- name: "Build debug APK"run: |if test -d "app"; then./gradlew assembleDebugelseecho "Error: 'app' directory not found. Check your zip file folder structure!"exit 1fi
+- name: "Commit extracted files back to GitHub"run: |git config --global user.name "github-actions"git config --global user.email "github-actions@github.com"git add .if git diff --staged --quiet; thenecho "No new files to commit."elsegit commit -m "Automatically unzipped mobile project folders"git pushfi
+- name: "Upload APK artifact"uses: "actions/upload-artifact@v4"with:name: "app-debug-apk"path: "app/build/outputs/apk/debug/app-debug.apk"
