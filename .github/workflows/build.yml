@@ -1,0 +1,74 @@
+name: Unzip and Build APK
+
+on:  
+push:  
+branches: \[ main \]  
+workflow\_dispatch:
+
+jobs:  
+build:  
+runs-on: ubuntu-latest
+
+steps:  
+\- name: Checkout repo  
+uses: actions/checkout@v4
+
+\# --- NEW STEP: Unzip your mobile upload first ---  
+\# Change "project.zip" if your uploaded file has a different name  
+\- name: Check and Extract zip archive  
+run: |  
+if \[ -f project.zip \]; then  
+echo "Zip file found! Extracting..."  
+unzip -o project.zip -d .  
+rm project.zip  
+else  
+echo "No zip file found. Proceeding with existing repository files."  
+fi
+
+\- name: Set up JDK 17  
+uses: actions/setup-java@v4  
+with:  
+distribution: 'temurin'  
+java-version: '17'
+
+\# --- IMPROVED STEP: Ensure gradlew exists before changing permissions ---  
+\# This prevents errors if gradlew was inside the zip or already in the repo  
+\- name: Grant execute permission for gradlew  
+run: |  
+if \[ -f gradlew \]; then  
+chmod +x gradlew  
+else  
+echo "Error: gradlew file not found! Make sure it is inside your project folder."  
+exit 1  
+fi
+
+\# --- IMPROVED STEP: Build debug APK ---  
+\# Added a check to make sure your Android folder structure is correct  
+\- name: Build debug APK  
+run: |  
+if \[ -d "app" \]; then  
+./gradlew assembleDebug  
+else  
+echo "Error: 'app' directory not found. Check your zip file folder structure!"  
+exit 1  
+fi
+
+\# --- NEW STEP: Commit the unzipped files back to your repository ---  
+\# This ensures your GitHub repository holds the actual folders, not just the temporary zip  
+\- name: Commit extracted files back to GitHub  
+run: |  
+git config --global user.name "github-actions\[bot\]"  
+git config --global user.email "41898282+github-actions\[bot\]@github.com"  
+git add .  
+if git diff --staged --quiet; then  
+echo "No new files to commit."  
+else  
+git commit -m "Automatically unzipped mobile project folders"  
+git push  
+fi
+
+\- name: Upload APK artifact  
+uses: actions/upload-artifact@v4  
+with:  
+name: app-debug-apk  
+path: app/build/outputs/apk/debug/app-debug.apk
