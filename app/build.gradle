@@ -45,4 +45,6 @@ dependencies {
 
     // PDF text extraction - PdfBox-Android port (works fully offline, no native deps issues)
     implementation 'com.tom-roush:pdfbox-android:2.0.27.0'
+
+    testImplementation 'junit:junit:4.13.2'
 }
